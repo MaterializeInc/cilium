@@ -461,7 +461,7 @@ func (n *NodeDiscovery) mutateNodeResource(nodeResource *ciliumv2.CiliumNode) er
 	case ipamOption.IPAMENI:
 		// set ENI field in the node only when the ENI ipam is specified
 		nodeResource.Spec.ENI = eniTypes.ENISpec{}
-		instanceID, instanceType, availabilityZone, vpcID, err := metadata.GetInstanceMetadata()
+		instanceID, instanceType, availabilityZone, vpcID, subnetID, err := metadata.GetInstanceMetadata()
 		if err != nil {
 			log.WithError(err).Fatal("Unable to retrieve InstanceID of own EC2 instance")
 		}
@@ -479,6 +479,7 @@ func (n *NodeDiscovery) mutateNodeResource(nodeResource *ciliumv2.CiliumNode) er
 		// determine the appropriate value to place inside the resource.
 		nodeResource.Spec.ENI.VpcID = vpcID
 		nodeResource.Spec.ENI.FirstInterfaceIndex = getInt(defaults.ENIFirstInterfaceIndex)
+		nodeResource.Spec.ENI.SubnetIDs = []string{subnetID}
 
 		if c := n.NetConf; c != nil {
 			if c.IPAM.MinAllocate != 0 {
